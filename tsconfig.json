@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "esnext",
+    "allowJs": true,
+    "outDir": "./",
+    "baseUrl": "./src",
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["node"],
+    "moduleResolution": "NodeNext",
+    "incremental": true,
+    "inlineSourceMap": true,
+    "inlineSources": true
+  },
+  "exclude": ["node_modules"],
+  "include": ["./src/*"]
+}
