@@ -18,7 +18,6 @@
 #include "union_room.h"
 #include "constants/songs.h"
 #include "constants/union_room.h"
-#include "constants/rgb.h"
 
 enum {
     COLORMODE_NORMAL,
@@ -52,26 +51,9 @@ static void Task_WirelessCommunicationScreen(u8);
 static void WCSS_AddTextPrinterParameterized(u8, u8, const u8 *, u8, u8, u8);
 static bool32 UpdateCommunicationCounts(u32 *, u32 *, u32 *, u8);
 
-static const u16 sPalettes[][16] = {
-    INCBIN_U16("graphics/wireless_status_screen/default.gbapal"),
-    {}, // All black. Never read
-    INCBIN_U16("graphics/wireless_status_screen/anim_00.gbapal"),
-    INCBIN_U16("graphics/wireless_status_screen/anim_01.gbapal"),
-    INCBIN_U16("graphics/wireless_status_screen/anim_02.gbapal"),
-    INCBIN_U16("graphics/wireless_status_screen/anim_03.gbapal"),
-    INCBIN_U16("graphics/wireless_status_screen/anim_04.gbapal"),
-    INCBIN_U16("graphics/wireless_status_screen/anim_05.gbapal"),
-    INCBIN_U16("graphics/wireless_status_screen/anim_06.gbapal"),
-    INCBIN_U16("graphics/wireless_status_screen/anim_07.gbapal"),
-    INCBIN_U16("graphics/wireless_status_screen/anim_08.gbapal"),
-    INCBIN_U16("graphics/wireless_status_screen/anim_09.gbapal"),
-    INCBIN_U16("graphics/wireless_status_screen/anim_10.gbapal"),
-    INCBIN_U16("graphics/wireless_status_screen/anim_11.gbapal"),
-    INCBIN_U16("graphics/wireless_status_screen/anim_12.gbapal"),
-    INCBIN_U16("graphics/wireless_status_screen/anim_13.gbapal")
-};
-static const u32 sBgTiles_Gfx[] = INCBIN_U32("graphics/wireless_status_screen/bg.4bpp.lz");
-static const u32 sBgTiles_Tilemap[] = INCBIN_U32("graphics/wireless_status_screen/bg.bin.lz");
+static const u16 sBgTiles_Pal[] = INCBIN_U16("graphics/link/wireless_info_screen.gbapal");
+static const u32 sBgTiles_Gfx[] = INCBIN_U32("graphics/link/wireless_info_screen.4bpp.lz");
+static const u32 sBgTiles_Tilemap[] = INCBIN_U32("graphics/link/wireless_info_screen.bin.lz");
 
 static const struct BgTemplate sBgTemplates[] = {
     {
@@ -211,7 +193,7 @@ static void CB2_InitWirelessCommunicationScreen(void)
     ChangeBgY(0, 0, BG_COORD_SET);
     ChangeBgX(1, 0, BG_COORD_SET);
     ChangeBgY(1, 0, BG_COORD_SET);
-    LoadPalette(sPalettes, 0x00, 0x20);
+    LoadPalette(sBgTiles_Pal, 0x00, 0x20);
     Menu_LoadStdPalAt(0xF0);
     DynamicPlaceholderTextUtil_Reset();
     FillBgTilemapBufferRect(0, 0, 0, 0, 32, 32, 0x0F);
@@ -236,19 +218,16 @@ static void CB2_ExitWirelessCommunicationStatusScreen(void)
     SetMainCallback2(CB2_ReturnToFieldContinueScriptPlayMapMusic);
 }
 
-// Cycle through palettes that relocate various shades of blue to create the wave effect at the bottom of the screen.
-static void CyclePalette(s16 * counter, s16 * palIdx)
+static void WCSS_CyclePalette(s16 * counter, s16 * palIdx)
 {
-    s32 idx;
     if (++(*counter) > 5)
     {
-        if (++(*palIdx) == (int)ARRAY_COUNT(sPalettes) - 2)
+        if (++(*palIdx) == 14)
             *palIdx = 0;
 
         *counter = 0;
     }
-    idx = *palIdx + 2; // +2 skips over default.pal and the empty black palette after it
-    LoadPalette(sPalettes[idx], 0, 16);
+    LoadPalette(sBgTiles_Pal + 16 * (*palIdx + 2), 0, 0x10);
 }
 
 static void PrintHeaderTexts(void)
@@ -257,17 +236,12 @@ static void PrintHeaderTexts(void)
     FillWindowPixelBuffer(0, PIXEL_FILL(0));
     FillWindowPixelBuffer(1, PIXEL_FILL(0));
     FillWindowPixelBuffer(2, PIXEL_FILL(0));
-
-    // Print title
     WCSS_AddTextPrinterParameterized(0, FONT_NORMAL, sHeaderTexts[0], GetStringCenterAlignXOffset(FONT_NORMAL, sHeaderTexts[0], 0xC0), 6, COLORMODE_GREEN);
-
-    // Print label for each group (excluding total)
-    for (i = 0; i < NUM_GROUPTYPES - 1; i++)
+    for (i = 0; i < (int)ARRAY_COUNT(*sHeaderTexts) - 1; i++)
+    {
         WCSS_AddTextPrinterParameterized(1, FONT_NORMAL, sHeaderTexts[i + 1], 0, 30 * i + 8, COLORMODE_WHITE_LGRAY);
-
-    // Print label for total
+    }
     WCSS_AddTextPrinterParameterized(1, FONT_NORMAL, sHeaderTexts[i + 1], 0, 30 * i + 8, COLORMODE_RED);
-
     PutWindowTilemap(0);
     CopyWindowToVram(0, COPYWIN_GFX);
     PutWindowTilemap(1);
@@ -286,7 +260,7 @@ static void Task_WirelessCommunicationScreen(u8 taskId)
         gTasks[taskId].tState++;
         break;
     case 1:
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, 0);
         ShowBg(1);
         CopyBgTilemapBufferToVram(0);
         ShowBg(0);
@@ -294,7 +268,9 @@ static void Task_WirelessCommunicationScreen(u8 taskId)
         break;
     case 2:
         if (!gPaletteFade.active)
+        {
             gTasks[taskId].tState++;
+        }
         break;
     case 3:
         if (UpdateCommunicationCounts(sStatusScreen->groupCounts, sStatusScreen->prevGroupCounts, sStatusScreen->activities, sStatusScreen->rfuTaskId))
@@ -317,10 +293,10 @@ static void Task_WirelessCommunicationScreen(u8 taskId)
             gTasks[sStatusScreen->rfuTaskId].data[15] = 0xFF;
             gTasks[taskId].tState++;
         }
-        CyclePalette(&gTasks[taskId].data[7], &gTasks[taskId].data[8]);
+        WCSS_CyclePalette(&gTasks[taskId].data[7], &gTasks[taskId].data[8]);
         break;
     case 4:
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, 0);
         gTasks[taskId].tState++;
         break;
     case 5:
@@ -335,7 +311,7 @@ static void Task_WirelessCommunicationScreen(u8 taskId)
 
 #undef tState
 
-static void WCSS_AddTextPrinterParameterized(u8 windowId, u8 fontId, const u8 * str, u8 x, u8 y, u8 mode)
+static void WCSS_AddTextPrinterParameterized(u8 windowId, u8 fontId, const u8 *str, u8 x, u8 y, u8 mode)
 {
     u8 color[3];
 

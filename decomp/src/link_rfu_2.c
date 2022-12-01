@@ -2525,8 +2525,9 @@ u8 RfuGetStatus(void)
 
 bool32 RfuHasErrored(void)
 {
-    u32 status = RfuGetStatus();
-    if (status == RFU_STATUS_FATAL_ERROR || status == RFU_STATUS_CONNECTION_ERROR)
+    // RFU_STATUS_OK will underflow here intentionally
+    u32 var = RfuGetStatus() - 1;
+    if (var < RFU_STATUS_CONNECTION_ERROR)
         return TRUE;
     else
         return FALSE;
@@ -2655,7 +2656,7 @@ static u8 GetPartnerIndexByNameAndTrainerID(const u8 *name, u16 id)
 
     for (i = 0; i < RFU_CHILD_MAX; i++)
     {
-        u16 trainerId = ReadU16(((struct RfuGameData *)gRfuLinkStatus->partner[i].gname)->compatibility.playerTrainerId);
+        u16 trainerId = ReadU16(gRfuLinkStatus->partner[i].gname + 2);
         if (IsRfuSerialNumberValid(gRfuLinkStatus->partner[i].serialNo)
             && !StringCompare(name, gRfuLinkStatus->partner[i].uname)
             && id == trainerId)
@@ -2681,9 +2682,9 @@ static void RfuReqDisconnectSlot(u32 slot)
 
 void RequestDisconnectSlotByTrainerNameAndId(const u8 *name, u16 id)
 {
-    u8 index = GetPartnerIndexByNameAndTrainerID(name, id);
-    if (index != 0xFF)
-        RfuReqDisconnectSlot(1 << index);
+    u8 var = GetPartnerIndexByNameAndTrainerID(name, id);
+    if (var != 0xFF)
+        RfuReqDisconnectSlot(1 << var);
 }
 
 void Rfu_DisconnectPlayerById(u32 playerIdx)

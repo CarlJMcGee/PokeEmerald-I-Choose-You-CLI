@@ -181,7 +181,7 @@ static void RemoveUnionRoomPlayerObjectEvent(u32 leaderId)
     RemoveObjectEventByLocalIdAndMap(sUnionRoomLocalIds[leaderId], gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
 }
 
-static bool32 SetUnionRoomPlayerEnterExitMovement(u32 leaderId, const u8 * movement)
+static bool32 SetUnionRoomPlayerEnterExitMovement(u32 leaderId, const u8 *movement)
 {
     u8 objectId;
     struct ObjectEvent * object;
@@ -340,10 +340,15 @@ static void AnimateUnionRoomPlayer(u32 leaderId, struct UnionRoomObject * object
         }
         break;
     case 1:
-        if (object->schedAnim != UNION_ROOM_SPAWN_OUT)
+        if (object->schedAnim == UNION_ROOM_SPAWN_OUT)
+        {
+            object->state = 3;
+            object->animState = 0;
+        }
+        else
+        {
             break;
-        object->state = 3;
-        object->animState = 0;
+        }
         // fallthrough
     case 3:
         if (AnimateUnionRoomPlayerDespawn(&object->animState, leaderId, object) == 1)
@@ -390,7 +395,7 @@ void DestroyUnionRoomPlayerObjects(void)
     DestroyTask_AnimateUnionRoomPlayers();
 }
 
-void CreateUnionRoomPlayerSprites(u8 * spriteIds, s32 leaderId)
+void CreateUnionRoomPlayerSprites(u8 *spriteIds, s32 leaderId)
 {
     s32 memberId;
     for (memberId = 0; memberId < MAX_RFU_PLAYERS; memberId++)
@@ -405,7 +410,7 @@ void CreateUnionRoomPlayerSprites(u8 * spriteIds, s32 leaderId)
     }
 }
 
-void DestroyUnionRoomPlayerSprites(u8 * spriteIds)
+void DestroyUnionRoomPlayerSprites(u8 *spriteIds)
 {
     s32 i;
     for (i = 0; i < NUM_UNION_ROOM_SPRITES; i++)

@@ -17,6 +17,7 @@
 #include "constants/battle_frontier.h"
 #include "constants/frontier_util.h"
 #include "constants/abilities.h"
+#include "constants/battle_config.h"
 #include "constants/layouts.h"
 #include "constants/rgb.h"
 #include "constants/trainers.h"
@@ -809,8 +810,11 @@ static void HealMon(struct Pokemon *mon)
 
 static bool8 DoesAbilityPreventStatus(struct Pokemon *mon, u32 status)
 {
-    u8 ability = GetMonAbility(mon);
+    u16 ability = GetMonAbility(mon);
     bool8 ret = FALSE;
+
+    if (ability == ABILITY_COMATOSE)
+        return TRUE;
 
     switch (status)
     {
@@ -819,7 +823,7 @@ static bool8 DoesAbilityPreventStatus(struct Pokemon *mon, u32 status)
             ret = TRUE;
         break;
     case STATUS1_BURN:
-        if (ability == ABILITY_WATER_VEIL)
+        if (ability == ABILITY_WATER_VEIL || ability == ABILITY_WATER_BUBBLE)
             ret = TRUE;
         break;
     case STATUS1_PARALYSIS:
@@ -845,21 +849,24 @@ static bool8 DoesTypePreventStatus(u16 species, u32 status)
     switch (status)
     {
     case STATUS1_TOXIC_POISON:
-        if (gSpeciesInfo[species].type1 == TYPE_STEEL || gSpeciesInfo[species].type1 == TYPE_POISON
-            || gSpeciesInfo[species].type2 == TYPE_STEEL || gSpeciesInfo[species].type2 == TYPE_POISON)
+        if (gBaseStats[species].type1 == TYPE_STEEL || gBaseStats[species].type1 == TYPE_POISON
+            || gBaseStats[species].type2 == TYPE_STEEL || gBaseStats[species].type2 == TYPE_POISON)
             ret = TRUE;
         break;
     case STATUS1_FREEZE:
-        if (gSpeciesInfo[species].type1 == TYPE_ICE || gSpeciesInfo[species].type2 == TYPE_ICE)
+        if (gBaseStats[species].type1 == TYPE_ICE || gBaseStats[species].type2 == TYPE_ICE)
             ret = TRUE;
         break;
     case STATUS1_PARALYSIS:
-        if (gSpeciesInfo[species].type1 == TYPE_GROUND || gSpeciesInfo[species].type1 == TYPE_ELECTRIC
-            || gSpeciesInfo[species].type2 == TYPE_GROUND || gSpeciesInfo[species].type2 == TYPE_ELECTRIC)
+        if (gBaseStats[species].type1 == TYPE_GROUND || gBaseStats[species].type2 == TYPE_GROUND
+        #if B_PARALYZE_ELECTRIC >= GEN_6
+            || gBaseStats[species].type1 == TYPE_ELECTRIC || gBaseStats[species].type2 == TYPE_ELECTRIC
+        #endif
+        )
             ret = TRUE;
         break;
     case STATUS1_BURN:
-        if (gSpeciesInfo[species].type1 == TYPE_FIRE || gSpeciesInfo[species].type2 == TYPE_FIRE)
+        if (gBaseStats[species].type1 == TYPE_FIRE || gBaseStats[species].type2 == TYPE_FIRE)
             ret = TRUE;
         break;
     case STATUS1_SLEEP:
@@ -1138,9 +1145,9 @@ bool32 TryGenerateBattlePikeWildMon(bool8 checkKeenEyeIntimidate)
 
     SetMonData(&gEnemyParty[0],
                MON_DATA_EXP,
-               &gExperienceTables[gSpeciesInfo[wildMons[headerId][pikeMonId].species].growthRate][monLevel]);
+               &gExperienceTables[gBaseStats[wildMons[headerId][pikeMonId].species].growthRate][monLevel]);
 
-    if (gSpeciesInfo[wildMons[headerId][pikeMonId].species].abilities[1])
+    if (gBaseStats[wildMons[headerId][pikeMonId].species].abilities[1])
         abilityNum = Random() % 2;
     else
         abilityNum = 0;
@@ -1624,7 +1631,7 @@ static bool8 CanEncounterWildMon(u8 enemyMonLevel)
 {
     if (!GetMonData(&gPlayerParty[0], MON_DATA_SANITY_IS_EGG))
     {
-        u8 monAbility = GetMonAbility(&gPlayerParty[0]);
+        u16 monAbility = GetMonAbility(&gPlayerParty[0]);
         if (monAbility == ABILITY_KEEN_EYE || monAbility == ABILITY_INTIMIDATE)
         {
             u8 playerMonLevel = GetMonData(&gPlayerParty[0], MON_DATA_LEVEL);

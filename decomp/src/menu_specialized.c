@@ -24,6 +24,7 @@
 #include "trig.h"
 #include "window.h"
 #include "constants/songs.h"
+#include "constants/battle_move_effects.h"
 #include "gba/io_reg.h"
 
 extern const struct CompressedSpriteSheet gMonFrontPicTable[];
@@ -187,7 +188,7 @@ static const struct ListMenuTemplate sMoveRelearnerMovesListTemplate =
     .itemVerticalPadding = 0,
     .scrollMultiple = LIST_NO_MULTIPLE_SCROLL,
     .fontId = FONT_NORMAL,
-    .cursorKind = CURSOR_BLACK_ARROW
+    .cursorKind = 0
 };
 
 //--------------
@@ -284,7 +285,7 @@ u8 MailboxMenu_CreateList(struct PlayerPCItemPageStruct *page)
     gMultiuseListMenuTemplate.moveCursorFunc = MailboxMenu_MoveCursorFunc;
     gMultiuseListMenuTemplate.itemPrintFunc = MailboxMenu_ItemPrintFunc;
     gMultiuseListMenuTemplate.fontId = FONT_NORMAL;
-    gMultiuseListMenuTemplate.cursorKind = CURSOR_BLACK_ARROW;
+    gMultiuseListMenuTemplate.cursorKind = 0;
     gMultiuseListMenuTemplate.lettersSpacing = 0;
     gMultiuseListMenuTemplate.itemVerticalPadding = 0;
     gMultiuseListMenuTemplate.scrollMultiple = LIST_NO_MULTIPLE_SCROLL;
@@ -807,7 +808,11 @@ static void MoveRelearnerLoadBattleMoveDescription(u32 chosenMove)
     }
     AddTextPrinterParameterized(0, FONT_NORMAL, str, 0x6A, 0x29, TEXT_SKIP_DRAW, NULL);
 
-    str = gMoveDescriptionPointers[chosenMove - 1];
+    if (move->effect != EFFECT_PLACEHOLDER)
+        str = gMoveDescriptionPointers[chosenMove - 1];
+    else
+        str = gNotDoneYetDescription;
+
     AddTextPrinterParameterized(0, FONT_NARROW, str, 0, 0x41, 0, NULL);
 }
 
@@ -1075,7 +1080,7 @@ void GetConditionMenuMonGfx(void *tilesDst, void *palDst, u16 boxId, u16 monId, 
         u32 trainerId = GetBoxOrPartyMonData(boxId, monId, MON_DATA_OT_ID, NULL);
         u32 personality = GetBoxOrPartyMonData(boxId, monId, MON_DATA_PERSONALITY, NULL);
 
-        LoadSpecialPokePic(&gMonFrontPicTable[species], tilesDst, species, personality, TRUE);
+        LoadSpecialPokePic(tilesDst, species, personality, TRUE);
         LZ77UnCompWram(GetMonSpritePalFromSpeciesAndPersonality(species, trainerId, personality), palDst);
     }
 }
@@ -1538,7 +1543,7 @@ void DrawLevelUpWindowPg1(u16 windowId, u16 *statsBefore, u16 *statsAfter, u8 bg
                                      0,
                                      15 * i,
                                      color,
-                                     TEXT_SKIP_DRAW,
+                                     -1,
                                      sLvlUpStatStrings[i]);
 
         StringCopy(text, (statsDiff[i] >= 0) ? gText_Plus : gText_Dash);
@@ -1547,7 +1552,7 @@ void DrawLevelUpWindowPg1(u16 windowId, u16 *statsBefore, u16 *statsAfter, u8 bg
                                      56,
                                      15 * i,
                                      color,
-                                     TEXT_SKIP_DRAW,
+                                     -1,
                                      text);
         if (abs(statsDiff[i]) <= 9)
             x = 18;
@@ -1560,7 +1565,7 @@ void DrawLevelUpWindowPg1(u16 windowId, u16 *statsBefore, u16 *statsAfter, u8 bg
                                      56 + x,
                                      15 * i,
                                      color,
-                                     TEXT_SKIP_DRAW,
+                                     -1,
                                      text);
     }
 }
@@ -1602,7 +1607,7 @@ void DrawLevelUpWindowPg2(u16 windowId, u16 *currStats, u8 bgClr, u8 fgClr, u8 s
                                      0,
                                      15 * i,
                                      color,
-                                     TEXT_SKIP_DRAW,
+                                     -1,
                                      sLvlUpStatStrings[i]);
 
         AddTextPrinterParameterized3(windowId,
@@ -1610,7 +1615,7 @@ void DrawLevelUpWindowPg2(u16 windowId, u16 *currStats, u8 bgClr, u8 fgClr, u8 s
                                      56 + x,
                                      15 * i,
                                      color,
-                                     TEXT_SKIP_DRAW,
+                                     -1,
                                      text);
     }
 }

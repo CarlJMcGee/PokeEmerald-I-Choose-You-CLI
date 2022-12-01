@@ -1538,7 +1538,7 @@ static void SetOpponentsBerryData(u16 playerBerryItemId, u8 playersNum, struct B
     u16 berryMasterDiff;
     u16 i;
 
-    if (playerBerryItemId == ITEM_ENIGMA_BERRY)
+    if (playerBerryItemId == ITEM_ENIGMA_BERRY_E_READER)
     {
         for (i = 0; i < FLAVOR_COUNT; i++)
         {
@@ -2286,7 +2286,7 @@ static u32 CalculatePokeblockColor(struct BlenderBerry* berries, s16 *_flavors, 
         for (j = 0; j < numPlayers; j++)
         {
             if (berries[i].itemId == berries[j].itemId && i != j
-                && (berries[i].itemId != ITEM_ENIGMA_BERRY || AreBlenderBerriesSame(berries, i, j)))
+                && (berries[i].itemId != ITEM_ENIGMA_BERRY_E_READER || AreBlenderBerriesSame(berries, i, j)))
                     return PBLOCK_CLR_BLACK;
         }
     }
@@ -2676,7 +2676,7 @@ static void CB2_EndBlenderGame(void)
         switch (Menu_ProcessInputNoWrapClearOnChoose())
         {
         case 1:
-        case MENU_B_PRESSED:
+        case -1:
             sBerryBlender->yesNoAnswer = 1;
             sBerryBlender->gameEndState++;
             for (i = 0; i < BLENDER_MAX_PLAYERS; i++)

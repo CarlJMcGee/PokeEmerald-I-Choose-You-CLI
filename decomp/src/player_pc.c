@@ -290,9 +290,8 @@ static const struct ListMenuTemplate sListMenuTemplate_ItemStorage =
     .cursorShadowPal = 3,
     .lettersSpacing = FALSE,
     .itemVerticalPadding = 0,
-    .scrollMultiple = LIST_NO_MULTIPLE_SCROLL,
-    .fontId = FONT_NARROW,
-    .cursorKind = CURSOR_BLACK_ARROW,
+    .scrollMultiple = FALSE,
+    .fontId = FONT_NARROW
 };
 
 static const struct WindowTemplate sWindowTemplates_ItemStorage[ITEMPC_WIN_COUNT] =
