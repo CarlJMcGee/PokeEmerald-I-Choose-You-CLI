@@ -4,5 +4,23 @@
   },
   "devDependencies": {
     "@types/node": "^18.11.10"
-  }
+  },
+  "name": "pokeemerald-i-choose-you-cli",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CarlJMcGee/PokeEmerald-I-Choose-You-CLI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CarlJMcGee/PokeEmerald-I-Choose-You-CLI/issues"
+  },
+  "homepage": "https://github.com/CarlJMcGee/PokeEmerald-I-Choose-You-CLI#readme",
+  "description": ""
 }
