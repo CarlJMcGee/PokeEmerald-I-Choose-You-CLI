@@ -18,6 +18,7 @@ async function main() {
   console.log(`Creating your custom ROM...`);
   const nproc = await getNproc(); // get nproc value for compiler
   await makeROM(nproc);
+  console.log(`Your ROM is complete!`);
 }
 
 main();
