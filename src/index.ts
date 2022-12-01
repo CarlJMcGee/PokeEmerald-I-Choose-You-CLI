@@ -3,13 +3,26 @@ import { simpleGit, SimpleGit, CleanOptions } from "simple-git";
 const git: SimpleGit = simpleGit().clean(CleanOptions.FORCE);
 
 async function main() {
-  console.log((await git.branchLocal()).current);
+  await git.checkout("main"); // start on main branch for consistancy
 
+  const branches = (await git.branchLocal()).all;
+  if (branches.includes("dist")) {
+    console.log(`Clearing old files`);
+    await git.deleteLocalBranch("dist", true); // delete old dist branch
+    console.log(`Done!`);
+  }
+
+  await git.checkoutLocalBranch("dist"); // create new dist branch to build in
+
+  console.log(`Merging Battle Engine to dist...`);
   try {
-    await git.checkoutLocalBranch("test");
-    console.log((await git.branchLocal()).current);
+    await git.mergeFromTo("feature/battle-engine", "dist");
+    console.log(`Completed!`);
   } catch (err) {
-    if (err) console.error(err);
+    if (err) {
+      console.log(`Branch failed to merge. See err: \n`);
+      console.error(err);
+    }
   }
 }
 
