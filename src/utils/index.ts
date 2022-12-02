@@ -45,16 +45,24 @@ export async function getNproc(): Promise<string> {
 
 export async function makeROM(nproc: string): Promise<string> {
   return new Promise((res, rej) => {
-    exec(`make -j${nproc}`, { cwd: "./decomp/" }, (err, stdout, stderr) => {
-      if (err) {
-        rej(err);
-      }
-      if (stderr) {
-        rej(stderr);
-      }
+    exec(
+      `make -j${nproc}`,
+      {
+        cwd: "./decomp/",
+        shell:
+          "C:Program FilesWindowsAppsTheDebianProject.DebianGNULinux_1.13.0.0_x64__76v4gfsz19hv4debian.exe",
+      },
+      (err, stdout, stderr) => {
+        if (err) {
+          rej(err);
+        }
+        if (stderr) {
+          rej(stderr);
+        }
 
-      console.log(stdout);
-      res(stdout);
-    });
+        console.log(stdout);
+        res(stdout);
+      }
+    );
   });
 }
