@@ -1,5 +1,5 @@
 import { simpleGit, SimpleGit, CleanOptions } from "simple-git";
-import { exec } from "child_process";
+import { exec, spawn } from "child_process";
 
 const git: SimpleGit = simpleGit().clean(CleanOptions.FORCE);
 
@@ -46,11 +46,9 @@ export async function getNproc(): Promise<string> {
 export async function makeROM(nproc: string): Promise<string> {
   return new Promise((res, rej) => {
     exec(
-      `make -j${nproc}`,
+      `wsl make -j${nproc}`,
       {
         cwd: "./decomp/",
-        shell:
-          "C:Program FilesWindowsAppsTheDebianProject.DebianGNULinux_1.13.0.0_x64__76v4gfsz19hv4debian.exe",
       },
       (err, stdout, stderr) => {
         if (err) {
@@ -65,4 +63,8 @@ export async function makeROM(nproc: string): Promise<string> {
       }
     );
   });
+}
+
+export async function Make(nproc: string) {
+  return new Promise((res, rej) => {});
 }

@@ -12,10 +12,10 @@ async function main() {
 
   await git.checkoutLocalBranch("dist"); // create new dist branch to build in
 
-  await mergeBatEng(); // add battle engine to dist branch decomp
+  // await mergeBatEng(); // add battle engine to dist branch decomp
 
   console.log(`Creating your custom ROM...`);
-  await installAgbcc();
+  // await installAgbcc();
   const nproc = await getNproc(); // get nproc value for compiler
   await makeROM(nproc);
   console.log(`Your ROM is complete!`);
