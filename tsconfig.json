@@ -8,7 +8,7 @@
     "target": "esnext",
     "allowJs": true,
     "outDir": "./",
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "typeRoots": ["./node_modules/@types"],
     "types": ["node"],
     "moduleResolution": "NodeNext",
@@ -17,5 +17,5 @@
     "inlineSources": true
   },
   "exclude": ["node_modules"],
-  "include": ["./src/*"]
+  "include": ["./"]
 }
