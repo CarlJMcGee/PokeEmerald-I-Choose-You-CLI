@@ -1,7 +1,6 @@
 import { simpleGit, SimpleGit, CleanOptions } from "simple-git";
-import { exec } from "child_process";
 
-import { cleanUp, getNproc, makeROM } from "./utils/index";
+import { cleanUp, getNproc, installAgbcc, makeROM } from "./utils/index";
 import { mergeBatEng } from "./utils/features";
 
 const git: SimpleGit = simpleGit().clean(CleanOptions.FORCE);
@@ -16,6 +15,7 @@ async function main() {
   await mergeBatEng(); // add battle engine to dist branch decomp
 
   console.log(`Creating your custom ROM...`);
+  await installAgbcc();
   const nproc = await getNproc(); // get nproc value for compiler
   await makeROM(nproc);
   console.log(`Your ROM is complete!`);

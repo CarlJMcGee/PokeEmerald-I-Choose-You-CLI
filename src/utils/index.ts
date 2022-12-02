@@ -12,9 +12,25 @@ export async function cleanUp() {
   }
 }
 
+export async function installAgbcc(): Promise<string> {
+  return new Promise((res, rej) => {
+    exec("install.sh ../decomp", { cwd: "./agbcc/" }, (err, stdout, stderr) => {
+      if (err) {
+        rej(err);
+      }
+      if (stderr) {
+        rej(stderr);
+      }
+
+      console.log(stdout);
+      res(stdout);
+    });
+  });
+}
+
 export async function getNproc(): Promise<string> {
   return new Promise((res, rej) => {
-    exec("nproc", (err, stdout, stderr) => {
+    exec("nproc", { cwd: "./decomp/" }, (err, stdout, stderr) => {
       if (err) {
         rej(err);
       }
@@ -29,7 +45,7 @@ export async function getNproc(): Promise<string> {
 
 export async function makeROM(nproc: string): Promise<string> {
   return new Promise((res, rej) => {
-    exec(`make -j${nproc}`, (err, stdout, stderr) => {
+    exec(`make -j${nproc}`, { cwd: "./decomp/" }, (err, stdout, stderr) => {
       if (err) {
         rej(err);
       }
