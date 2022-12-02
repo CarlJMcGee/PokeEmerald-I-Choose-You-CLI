@@ -49,6 +49,7 @@ export async function makeROM(nproc: string): Promise<string> {
       `wsl make -j${nproc}`,
       {
         cwd: "./decomp/",
+        maxBuffer: undefined,
       },
       (err, stdout, stderr) => {
         if (err) {
