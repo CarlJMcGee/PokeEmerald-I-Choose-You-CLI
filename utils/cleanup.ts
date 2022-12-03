@@ -1,3 +1,4 @@
+import { existsSync } from "fs";
 import { rm } from "fs/promises";
 
 async function main() {

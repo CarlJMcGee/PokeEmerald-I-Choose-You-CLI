@@ -11,10 +11,10 @@
   },
   "name": "pokeemerald-i-choose-you-cli",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "start": "ts-node index",
-    "cleanup": "ts-node ./utils/cleanup"
+    "cleanup": "ts-node ./utils/cleanup.ts"
   },
   "repository": {
     "type": "git",

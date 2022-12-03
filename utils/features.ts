@@ -8,7 +8,7 @@ const term = Terminal.terminal();
 
 export async function addMaster() {
   const spinner = ora("Adding master files").start();
-  await cp("./pokeemerald-master", "./dest", { recursive: true });
+  await cp("./pokeemerald-master", "./dist", { recursive: true });
   spinner.succeed();
 }
 
