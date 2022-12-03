@@ -1,16 +1,21 @@
-import { simpleGit, SimpleGit, CleanOptions } from "simple-git";
+import { cp } from "fs/promises";
 
-const git: SimpleGit = simpleGit().clean(CleanOptions.FORCE);
+import ora from "ora";
 
-export async function mergeBatEng() {
-  console.log(`Merging Battle Engine to dist...`);
-  try {
-    await git.mergeFromTo("feature/battle-engine", "dist");
-    console.log(`Completed!`);
-  } catch (err) {
-    if (err) {
-      console.log(`Branch failed to merge. See err: \n`);
-      console.error(err);
-    }
-  }
+import Terminal from "terminal-kit";
+import { setTimeout } from "timers/promises";
+const term = Terminal.terminal();
+
+export async function addMaster() {
+  const spinner = ora("Adding master files").start();
+  await cp("./pokeemerald-master", "./dest", { recursive: true });
+  spinner.succeed();
+}
+
+export async function addBattleEngine() {
+  const spinner = ora("Adding Battle Engine Uprgade").start();
+  await cp("./src/pokeemerald-expansion-battle_engine", "./dist", {
+    recursive: true,
+  });
+  spinner.succeed();
 }

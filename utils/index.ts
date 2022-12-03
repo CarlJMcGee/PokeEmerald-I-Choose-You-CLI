@@ -1,13 +1,14 @@
 import { simpleGit, SimpleGit, CleanOptions } from "simple-git";
+import { rm, rmdir } from "fs/promises";
+import { existsSync } from "fs";
 import { exec, spawn } from "child_process";
 
 const git: SimpleGit = simpleGit().clean(CleanOptions.FORCE);
 
 export async function cleanUp() {
-  const branches = (await git.branchLocal()).all;
-  if (branches.includes("dist")) {
-    console.log(`Clearing old files`);
-    await git.deleteLocalBranch("dist", true); // delete old dist branch
+  if (existsSync("./dist")) {
+    console.log(`Clearing old files...`);
+    await rm("./dist", { maxRetries: 3, recursive: true, force: true });
     console.log(`Done!`);
   }
 }

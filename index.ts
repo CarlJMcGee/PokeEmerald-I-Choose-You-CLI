@@ -1,7 +1,8 @@
+import { copyFile, cp, mkdir } from "fs/promises";
 import { simpleGit, SimpleGit, CleanOptions } from "simple-git";
+import { addMaster } from "./utils/features";
 
 import { cleanUp, getNproc, installAgbcc, makeROM } from "./utils/index";
-import { mergeBatEng } from "./utils/features";
 
 const git: SimpleGit = simpleGit().clean(CleanOptions.FORCE);
 
@@ -21,4 +22,14 @@ async function main() {
   console.log(`Your ROM is complete!`);
 }
 
-main();
+async function test() {
+  await cleanUp();
+  await mkdir("./dist");
+
+  await addMaster();
+  console.log(`Complete!`);
+}
+
+// main();
+
+test();
