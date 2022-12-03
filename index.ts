@@ -1,20 +1,10 @@
-import { copyFile, cp, mkdir } from "fs/promises";
-import { simpleGit, SimpleGit, CleanOptions } from "simple-git";
+import { mkdir } from "fs/promises";
 import { addMaster } from "./utils/features";
+import { Prompt } from "./utils/promps";
 
 import { cleanUp, getNproc, installAgbcc, makeROM } from "./utils/index";
 
-const git: SimpleGit = simpleGit().clean(CleanOptions.FORCE);
-
 async function main() {
-  await git.checkout("main"); // start on main branch for consistancy
-
-  await cleanUp();
-
-  await git.checkoutLocalBranch("dist"); // create new dist branch to build in
-
-  // await mergeBatEng(); // add battle engine to dist branch decomp
-
   console.log(`Creating your custom ROM...`);
   // await installAgbcc();
   const nproc = await getNproc(); // get nproc value for compiler
@@ -24,9 +14,14 @@ async function main() {
 
 async function test() {
   await cleanUp();
-  await mkdir("./dist");
 
-  await addMaster();
+  const res = await Prompt();
+
+  console.log(res);
+
+  // await mkdir("./dist");
+
+  // await addMaster();
   console.log(`Complete!`);
 }
 
