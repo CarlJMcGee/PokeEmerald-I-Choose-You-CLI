@@ -42,13 +42,17 @@ export async function getNproc() {
   });
 }
 
-export async function makeROM(nproc: string, name: string): Promise<string> {
+export async function makeROM(nproc: string): Promise<string> {
   return new Promise((res, rej) => {
-    const make = spawn("wsl", ["make", `-j${nproc}`], { cwd: "./dist/" });
-    make.stdout.on("data", (data) => console.log(`${data}`));
+    const make = spawn("wsl", ["make"], { cwd: "./dist/" });
+    let entry: string;
+    const log = Ora(`Make: ${entry}`).start();
+    make.stdout.on("data", (data) => (entry = `${data}`));
     make.stderr.on("data", (data) => rej(`${data}`));
     make.on("close", (code) => {
-      renameSync("./dist/pokeemerald.gba", `./dist/${name.trim()}.gba`);
+      res(`process ended with code ${code}`);
+    });
+    make.on("exit", (code) => {
       res(`process ended with code ${code}`);
     });
   });
