@@ -1,6 +1,6 @@
 import { rm } from "fs/promises";
 import Ora from "ora";
-import { existsSync } from "fs";
+import { existsSync, renameSync } from "fs";
 import { exec, spawn } from "child_process";
 
 export async function cleanUp() {
@@ -42,12 +42,13 @@ export async function getNproc() {
   });
 }
 
-export async function makeROM(nproc: string): Promise<string> {
+export async function makeROM(nproc: string, name: string): Promise<string> {
   return new Promise((res, rej) => {
     const make = spawn("wsl", ["make", `-j${nproc}`], { cwd: "./dist/" });
     make.stdout.on("data", (data) => console.log(`${data}`));
     make.stderr.on("data", (data) => rej(`${data}`));
     make.on("close", (code) => {
+      renameSync("./dist/pokeemerald.gba", `./dist/${name.trim()}.gba`);
       res(`process ended with code ${code}`);
     });
   });

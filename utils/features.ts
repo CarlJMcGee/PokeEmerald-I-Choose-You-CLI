@@ -16,13 +16,15 @@ export async function buildDist(
     const featureMap = MapPlus([["Battle Engine Upgrade", addBattleEngine]]);
     await addMaster();
 
-    await new Promise<undefined>((res) => {
-      addons.map(async (addon, i) => {
-        await featureMap.get(addon)();
+    addons.length > 0
+      ? await new Promise<undefined>((res) => {
+          addons.map(async (addon, i) => {
+            await featureMap.get(addon)();
 
-        i + 1 === addons.length ? res(undefined) : null;
-      });
-    });
+            i + 1 === addons.length ? res(undefined) : null;
+          });
+        })
+      : null;
     res(undefined);
   });
 }

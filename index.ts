@@ -17,11 +17,12 @@ async function main() {
 
     const prompt = await Prompt();
 
-    console.log(`Creating your custom ROM...`);
+    console.log(`Creating your custom ROM. Be patient as this process can take between
+    5-10 minutes depending on how fast your system is.`);
     await buildDist(prompt.addons);
 
-    // const nproc = await getNproc(); // get nproc value for compiler
-    // await makeROM(nproc); // use wsl to compile into final ROM
+    const nproc = await getNproc(); // get nproc value for compiler
+    await makeROM(nproc, prompt.customName); // use wsl to compile into final ROM w/ custom name
     console.log(`Your ROM is complete!`);
   } catch (err) {
     if (err) console.error(err);
