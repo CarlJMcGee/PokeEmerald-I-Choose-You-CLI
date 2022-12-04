@@ -1,3 +1,4 @@
+import { cpSync } from "fs";
 import { cp } from "fs/promises";
 
 import ora from "ora";
@@ -15,6 +16,14 @@ export async function addMaster() {
 export async function addBattleEngine() {
   const spinner = ora("Adding Battle Engine Uprgade").start();
   await cp("./src/pokeemerald-expansion-battle_engine", "./dist", {
+    recursive: true,
+  });
+  spinner.succeed();
+}
+
+export function addBattleEngineSync() {
+  const spinner = ora("Adding Battle Engine Uprgade").start();
+  cpSync("./src/pokeemerald-expansion-battle_engine", "./dist", {
     recursive: true,
   });
   spinner.succeed();
