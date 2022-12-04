@@ -7,19 +7,23 @@ import { cleanUp, getNproc, makeROM } from "./utils/index";
 
 async function main() {
   const featureMap = MapPlus([["Battle Engine Upgrade", addBattleEngine]]);
-  await cleanUp();
+  try {
+    await cleanUp();
 
-  const prompt = await Prompt();
+    const prompt = await Prompt();
 
-  console.log(`Creating your custom ROM...`);
-  await addMaster();
-  prompt.addons.forEach(async (addon) => {
-    await featureMap.get(addon)();
-  });
+    console.log(`Creating your custom ROM...`);
+    await addMaster();
+    prompt.addons.forEach(async (addon) => {
+      await featureMap.get(addon)();
+    });
 
-  const nproc = await getNproc(); // get nproc value for compiler
-  await makeROM(nproc); // use wsl to compile into final ROM
-  console.log(`Your ROM is complete!`);
+    const nproc = await getNproc(); // get nproc value for compiler
+    await makeROM(nproc); // use wsl to compile into final ROM
+    console.log(`Your ROM is complete!`);
+  } catch (err) {
+    if (err) console.error(err);
+  }
 }
 
 main();

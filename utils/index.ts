@@ -29,13 +29,17 @@ export async function installAgbcc(): Promise<string> {
   });
 }
 
-export async function getNproc(): Promise<string> {
-  return new Promise((res, rej) => {
-    const nproc = spawn("nproc", { cwd: "./dist/" });
-    nproc.stdout.on("data", (data) => console.log(data));
-    nproc.stderr.on("data", (data) => rej(`${data}`));
-    nproc.on("close", (code) => {
-      res(`process ended with code ${code}`);
+export async function getNproc() {
+  return new Promise<string>((res, rej) => {
+    exec("nproc", { cwd: "./dist/" }, (err, stdout, stderr) => {
+      if (err) {
+        rej(err);
+      }
+      if (stderr) {
+        rej(stderr);
+      }
+
+      res(stdout);
     });
   });
 }
@@ -43,7 +47,7 @@ export async function getNproc(): Promise<string> {
 export async function makeROM(nproc: string): Promise<string> {
   return new Promise((res, rej) => {
     const make = spawn("wsl", ["make", `-j${nproc}`], { cwd: "./dist/" });
-    make.stdout.on("data", (data) => console.log(data));
+    make.stdout.on("data", (data) => console.log(`${data}`));
     make.stderr.on("data", (data) => rej(`${data}`));
     make.on("close", (code) => {
       res(`process ended with code ${code}`);
