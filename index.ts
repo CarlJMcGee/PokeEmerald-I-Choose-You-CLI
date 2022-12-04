@@ -1,15 +1,27 @@
 import { mkdir } from "fs/promises";
-import { addMaster } from "./utils/features";
+import { addMaster, addBattleEngine } from "./utils/features";
 import { Prompt } from "./utils/promps";
+import { MapPlus } from "./utils/sets-maps";
 
-import { cleanUp, getNproc, installAgbcc, makeROM } from "./utils/index";
+import { cleanUp, getNproc, makeROM } from "./utils/index";
 
-async function main() {
-  console.log(`Creating your custom ROM...`);
-  // await installAgbcc();
-  const nproc = await getNproc(); // get nproc value for compiler
-  await makeROM(nproc);
-  console.log(`Your ROM is complete!`);
+function main() {
+  const featureMap = MapPlus([["Battle Engine Upgrade", addBattleEngine()]]);
+  return async () => {
+    await cleanUp();
+
+    const prompt = await Prompt();
+
+    console.log(`Creating your custom ROM...`);
+    await addMaster();
+    prompt.addons.forEach(async (addon) => {
+      await featureMap.get(addon);
+    });
+
+    // const nproc = await getNproc(); // get nproc value for compiler
+    // await makeROM(nproc);
+    console.log(`Your ROM is complete!`);
+  };
 }
 
 async function test() {
@@ -25,6 +37,6 @@ async function test() {
   console.log(`Complete!`);
 }
 
-// main();
+main();
 
-test();
+// test();
