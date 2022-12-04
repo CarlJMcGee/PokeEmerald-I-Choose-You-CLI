@@ -17,24 +17,9 @@ async function main() {
     await featureMap.get(addon)();
   });
 
-  // const nproc = await getNproc(); // get nproc value for compiler
-  // await makeROM(nproc);
+  const nproc = await getNproc(); // get nproc value for compiler
+  await makeROM(nproc); // use wsl to compile into final ROM
   console.log(`Your ROM is complete!`);
 }
 
-async function test() {
-  await cleanUp();
-
-  const res = await Prompt();
-
-  console.log(res);
-
-  // await mkdir("./dist");
-
-  // await addMaster();
-  console.log(`Complete!`);
-}
-
 main();
-
-// test();

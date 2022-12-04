@@ -31,39 +31,23 @@ export async function installAgbcc(): Promise<string> {
 
 export async function getNproc(): Promise<string> {
   return new Promise((res, rej) => {
-    exec("nproc", { cwd: "./decomp/" }, (err, stdout, stderr) => {
-      if (err) {
-        rej(err);
-      }
-      if (stderr) {
-        rej(stderr);
-      }
-
-      res(stdout);
+    const nproc = spawn("nproc", { cwd: "./dist/" });
+    nproc.stdout.on("data", (data) => console.log(data));
+    nproc.stderr.on("data", (data) => rej(`${data}`));
+    nproc.on("close", (code) => {
+      res(`process ended with code ${code}`);
     });
   });
 }
 
 export async function makeROM(nproc: string): Promise<string> {
   return new Promise((res, rej) => {
-    exec(
-      `wsl make -j${nproc}`,
-      {
-        cwd: "./decomp/",
-        maxBuffer: undefined,
-      },
-      (err, stdout, stderr) => {
-        if (err) {
-          rej(err);
-        }
-        if (stderr) {
-          rej(stderr);
-        }
-
-        console.log(stdout);
-        res(stdout);
-      }
-    );
+    const make = spawn("wsl", ["make", `-j${nproc}`], { cwd: "./dist/" });
+    make.stdout.on("data", (data) => console.log(data));
+    make.stderr.on("data", (data) => rej(`${data}`));
+    make.on("close", (code) => {
+      res(`process ended with code ${code}`);
+    });
   });
 }
 
