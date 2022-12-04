@@ -1,15 +1,13 @@
-import { simpleGit, SimpleGit, CleanOptions } from "simple-git";
-import { rm, rmdir } from "fs/promises";
+import { rm } from "fs/promises";
+import Ora from "ora";
 import { existsSync } from "fs";
 import { exec, spawn } from "child_process";
 
-const git: SimpleGit = simpleGit().clean(CleanOptions.FORCE);
-
 export async function cleanUp() {
   if (existsSync("./dist")) {
-    console.log(`Clearing old files...`);
+    const ora = Ora("Clearing old files").start();
     await rm("./dist", { maxRetries: 3, recursive: true, force: true });
-    console.log(`Done!`);
+    ora.succeed();
   }
 }
 
